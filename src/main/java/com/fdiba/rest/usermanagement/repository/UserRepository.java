@@ -9,7 +9,7 @@ import java.util.List;
 @Service
 public class UserRepository {
 
-    private final List<User> userInMemoryDatabase = new ArrayList<>();
+    private List<User> userInMemoryDatabase = new ArrayList<>();
 
     public long count() {
         return userInMemoryDatabase.size();
@@ -33,6 +33,10 @@ public class UserRepository {
     public boolean delete(final User user) {
         userInMemoryDatabase.remove(user);
         return userInMemoryDatabase.stream().anyMatch(u -> u.getId().equals(user.getId()));
+    }
+
+    public void deleteAll() {
+        this.userInMemoryDatabase = new ArrayList<>();
     }
 
     public boolean isEmpty() {
