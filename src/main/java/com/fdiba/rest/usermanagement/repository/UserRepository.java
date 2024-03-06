@@ -11,7 +11,7 @@ public class UserRepository {
 
     private final List<User> userInMemoryDatabase = new ArrayList<>();
 
-    public int count() {
+    public long count() {
         return userInMemoryDatabase.size();
     }
 
@@ -28,6 +28,11 @@ public class UserRepository {
     public boolean save(final User user) {
         userInMemoryDatabase.add(user);
         return true;
+    }
+
+    public boolean delete(final User user) {
+        userInMemoryDatabase.remove(user);
+        return userInMemoryDatabase.stream().anyMatch(u -> u.getId().equals(user.getId()));
     }
 
     public boolean isEmpty() {

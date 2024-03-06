@@ -17,8 +17,22 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public Long countUsers() {
+        return userRepository.count();
+    }
+
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(user -> {
+                    UserDTO dto = new UserDTO();
+
+                    dto.setId(user.getId());
+                    dto.setFirstName(user.getFirstName());
+                    dto.setLastName(user.getLastName());
+                    dto.setUsername(user.getUsername());
+
+                    return dto;
+                }).toList();
     }
 
     public UserDTO getUserById(final Long id) {
@@ -39,12 +53,12 @@ public class UserService {
         return dto;
     }
 
-    public boolean createUser(final CreateUserDTO createUserDTO) {
+    public UserDTO createUser(final CreateUserDTO createUserDTO) {
         final String password = createUserDTO.getPassword();
         final String confirmationPassword = createUserDTO.getConfirmationPassword();
 
         if (!password.equals(confirmationPassword)) {
-            return false;
+            return null;
         }
 
         final Long userId = userRepository.count() + 1L;
@@ -58,6 +72,22 @@ public class UserService {
 
         userRepository.save(newUser);
 
-        return true;
+        UserDTO dto = new UserDTO();
+        dto.setId(newUser.getId());
+        dto.setFirstName(newUser.getFirstName());
+        dto.setLastName(newUser.getLastName());
+        dto.setUsername(newUser.getUsername());
+
+        return dto;
+    }
+
+    public boolean delete(Long id) {
+        final User foundUser = userRepository.findById(id);
+
+        if (foundUser == null) {
+            return false; // skip delete for non-existing user
+        }
+
+        return userRepository.delete(foundUser);
     }
 }
